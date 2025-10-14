@@ -3,28 +3,27 @@
 <head>
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
-  <title>Día de la Madre - Regalo Especial FÉNIX</title>
+  <title>Día de la Madre - Regalo especial FÉNIX</title>
+
+  <!-- Fuentes -->
   <link rel="preconnect" href="https://fonts.googleapis.com">
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-  <link href="https://fonts.googleapis.com/css2?family=Playfair+Display:wght@400;600;700&family=Inter:wght@300;400;500;600&display=swap" rel="stylesheet">
+  <link href="https://fonts.googleapis.com/css2?family=Bodoni+Moda:wght@600;700;800&family=Plus+Jakarta+Sans:wght@400;500;600&display=swap" rel="stylesheet">
+
   <style>
-    * { margin:0; padding:0; box-sizing:border-box; }
+    *{margin:0;padding:0;box-sizing:border-box}
+    html{-webkit-font-smoothing:antialiased;text-rendering:optimizeLegibility}
 
     :root{
-      --primary:#FF8C42;
-      --primary-dark:#E67A2E;
-      --secondary:#FFB366;
-      --accent:#FFD700;
-      --dark:#1A1A1A;
-      --dark-soft:#2A2A2A;
-      --cream:#FFF8F0;
-      --white:#FFFFFF;
+      --primary:#FF8C42; --primary-dark:#E67A2E; --secondary:#FFB366; --accent:#FFD700;
+      --dark:#1A1A1A; --dark-soft:#2A2A2A; --cream:#FFF8F0; --white:#FFFFFF;
     }
 
     body{
-      font-family:'Inter', -apple-system, BlinkMacSystemFont, sans-serif;
-      background:linear-gradient(135deg, var(--dark) 0%, var(--dark-soft) 50%, #3A2A1A 100%);
-      min-height:100vh; color:var(--cream); overflow-x:hidden; position:relative;
+      font-family:'Plus Jakarta Sans', system-ui, -apple-system, Segoe UI, Roboto, Arial, sans-serif;
+      background:linear-gradient(135deg,var(--dark) 0%,var(--dark-soft) 50%,#3A2A1A 100%);
+      min-height:100vh;color:var(--cream);overflow-x:hidden;position:relative;
+      letter-spacing:.1px; line-height:1.6;
     }
     body::before{
       content:''; position:fixed; inset:0; pointer-events:none; z-index:0;
@@ -34,150 +33,102 @@
     }
 
     /* Preloader */
-    #preloader{
-      position:fixed; inset:0; z-index:9999;
-      background:linear-gradient(135deg,var(--dark) 0%, var(--dark-soft) 100%);
-      display:flex; flex-direction:column; align-items:center; justify-content:center;
-      transition:opacity .5s ease, visibility .5s ease;
-    }
-    #preloader.hidden{ opacity:0; visibility:hidden; }
-
-    #logo{
-      width:200px; max-width:80vw; height:auto;
-      animation:logoFloat 2.5s ease-in-out infinite;
-      filter:drop-shadow(0 10px 30px rgba(255,140,66,.3));
-    }
-    @keyframes logoFloat{ 0%,100%{transform:translateY(0)} 50%{transform:translateY(-15px)} }
-
-    .loading-progress{ margin-top:30px; width:280px; max-width:80vw; }
-    .progress-bar-container{
-      width:100%; height:4px; background:rgba(255,140,66,.2);
-      border-radius:10px; overflow:hidden; position:relative; box-shadow:0 2px 10px rgba(0,0,0,.3);
-    }
-    .progress-bar-fill{
-      height:100%;
-      background:linear-gradient(90deg,var(--primary),var(--secondary),var(--accent));
-      background-size:200% 100%;
-      width:0%; border-radius:10px; transition:width .1s linear; animation:shimmer 1.5s infinite;
-      box-shadow:0 0 10px rgba(255,140,66,.5);
-    }
-    @keyframes shimmer{ 0%{background-position:200% 0} 100%{background-position:-200% 0} }
-    .progress-text{ margin-top:12px; font-size:.85rem; letter-spacing:2px; text-transform:uppercase; color:var(--secondary); text-align:center; }
+    #preloader{position:fixed;inset:0;z-index:9999;display:flex;flex-direction:column;align-items:center;justify-content:center;
+      background:linear-gradient(135deg,var(--dark) 0%, var(--dark-soft) 100%);transition:opacity .5s ease,visibility .5s ease}
+    #preloader.hidden{opacity:0;visibility:hidden}
+    #logo{width:200px;max-width:80vw;height:auto;animation:logoFloat 2.5s ease-in-out infinite;filter:drop-shadow(0 10px 30px rgba(255,140,66,.3))}
+    @keyframes logoFloat{0%,100%{transform:translateY(0)}50%{transform:translateY(-15px)}}
+    .loading-progress{margin-top:30px;width:280px;max-width:80vw}
+    .progress-bar-container{width:100%;height:4px;background:rgba(255,140,66,.2);border-radius:10px;overflow:hidden;box-shadow:0 2px 10px rgba(0,0,0,.3)}
+    .progress-bar-fill{height:100%;background:linear-gradient(90deg,var(--primary),var(--secondary),var(--accent));
+      background-size:200% 100%;width:0%;border-radius:10px;transition:width .1s linear;animation:shimmer 1.5s infinite;box-shadow:0 0 10px rgba(255,140,66,.5)}
+    @keyframes shimmer{0%{background-position:200% 0}100%{background-position:-200% 0}}
+    .progress-text{margin-top:10px;font-size:.85rem;color:var(--secondary);text-align:center;letter-spacing:.5px}
 
     /* Layout */
-    .container{
-      position:relative; z-index:1; min-height:100vh;
-      display:flex; flex-direction:column; align-items:center; justify-content:center; padding:20px;
-    }
+    .container{position:relative;z-index:1;min-height:100vh;display:flex;flex-direction:column;align-items:center;justify-content:center;padding:20px}
 
-    .header-section{ text-align:center; margin-bottom:60px; animation:fadeInDown 1s ease; }
-    @keyframes fadeInDown{ from{opacity:0; transform:translateY(-30px)} to{opacity:1; transform:translateY(0)} }
+    .header-section{text-align:center;margin-bottom:56px;animation:fadeInDown 1s ease}
+    @keyframes fadeInDown{from{opacity:0;transform:translateY(-30px)}to{opacity:1;transform:translateY(0)}}
 
     .event-badge{
-      display:inline-block; padding:8px 24px;
+      display:inline-block;padding:8px 18px;border-radius:999px;
       background:linear-gradient(135deg,var(--primary),var(--secondary));
-      border-radius:50px; font-size:.75rem; font-weight:600; letter-spacing:2px; text-transform:uppercase;
-      margin-bottom:20px; box-shadow:0 4px 20px rgba(255,140,66,.3);
+      font-size:.8rem;font-weight:600;letter-spacing:.4px;color:var(--white);
+      margin-bottom:18px;box-shadow:0 4px 20px rgba(255,140,66,.3)
     }
+
     h1{
-      font-family:'Playfair Display', serif;
-      font-size:clamp(2rem,8vw,4rem); font-weight:700; line-height:1.2; margin-bottom:16px;
+      font-family:'Bodoni Moda', serif; font-weight:700; line-height:1.15;
+      font-size:clamp(2.2rem,5vw,3.6rem); margin-bottom:12px; letter-spacing:.2px;
       background:linear-gradient(135deg,var(--accent),var(--secondary));
-      -webkit-background-clip:text; background-clip:text; -webkit-text-fill-color:transparent;
+      -webkit-background-clip:text;background-clip:text;-webkit-text-fill-color:transparent;
     }
-    .subtitle{
-      font-size:clamp(1rem,3vw,1.25rem); color:var(--cream); font-weight:300; line-height:1.6;
-      max-width:600px; margin:0 auto; opacity:.9;
-    }
+    .subtitle{max-width:620px;margin:0 auto;color:rgba(255,248,240,.9);font-size:clamp(1rem,2.2vw,1.15rem)}
 
-    .gift-wrapper{ position:relative; animation:fadeInUp 1s ease .3s both; }
-    @keyframes fadeInUp{ from{opacity:0; transform:translateY(30px)} to{opacity:1; transform:translateY(0)} }
-
-    .gift-container{ position:relative; perspective:1000px; }
+    /* Gift */
+    .gift-wrapper{animation:fadeInUp 1s ease .25s both}
+    @keyframes fadeInUp{from{opacity:0;transform:translateY(30px)}to{opacity:1;transform:translateY(0)}}
+    .gift-container{perspective:1000px}
     .gift-box{
-      width:clamp(200px,40vw,280px); height:clamp(200px,40vw,280px);
-      background:linear-gradient(135deg,var(--primary) 0%, var(--primary-dark) 100%);
-      border-radius:24px; display:flex; flex-direction:column; justify-content:center; align-items:center;
-      cursor:pointer; position:relative;
-      transition:all .4s cubic-bezier(.4,0,.2,1);
-      box-shadow:0 20px 60px rgba(255,140,66,.4), 0 0 0 1px rgba(255,215,0,.2), inset 0 1px 0 rgba(255,255,255,.1);
+      width:clamp(200px,40vw,280px);height:clamp(200px,40vw,280px);
+      background:linear-gradient(135deg,var(--primary) 0%,var(--primary-dark) 100%);
+      border-radius:22px;display:flex;flex-direction:column;justify-content:center;align-items:center;
+      cursor:pointer;transition:all .35s cubic-bezier(.4,0,.2,1);
+      box-shadow:0 20px 60px rgba(255,140,66,.4),0 0 0 1px rgba(255,215,0,.18),inset 0 1px 0 rgba(255,255,255,.1)
     }
-    .gift-box::before{
-      content:''; position:absolute; inset:0; border-radius:24px; padding:2px;
-      background:linear-gradient(135deg,var(--accent),transparent);
-      -webkit-mask:linear-gradient(#fff 0 0) content-box, linear-gradient(#fff 0 0);
-      -webkit-mask-composite:xor; mask-composite:exclude; opacity:.5;
-    }
-    .gift-box:hover{ transform:translateY(-8px) scale(1.02); box-shadow:0 30px 80px rgba(255,140,66,.5), 0 0 0 1px rgba(255,215,0,.3), inset 0 1px 0 rgba(255,255,255,.2); }
-    .gift-box.opened{ animation:giftOpen .8s cubic-bezier(.68,-.55,.265,1.55); pointer-events:none; }
-    @keyframes giftOpen{ 0%{transform:scale(1) rotateY(0)} 50%{transform:scale(1.1) rotateY(180deg)} 100%{transform:scale(.9) rotateY(360deg)} }
+    .gift-box:hover{transform:translateY(-6px) scale(1.015);box-shadow:0 28px 72px rgba(255,140,66,.5),0 0 0 1px rgba(255,215,0,.28),inset 0 1px 0 rgba(255,255,255,.2)}
+    .gift-box.opened{animation:giftOpen .8s cubic-bezier(.68,-.55,.265,1.55);pointer-events:none}
+    @keyframes giftOpen{0%{transform:scale(1) rotateY(0)}50%{transform:scale(1.08) rotateY(180deg)}100%{transform:scale(.96) rotateY(360deg)}}
+    .gift-icon{font-size:clamp(4rem,12vw,6rem);margin-bottom:10px;animation:giftFloat 3s ease-in-out infinite}
+    @keyframes giftFloat{0%,100%{transform:translateY(0) rotate(0)}50%{transform:translateY(-10px) rotate(5deg)}}
+    .gift-label{font-family:'Bodoni Moda', serif;font-weight:600;color:var(--white);font-size:clamp(1rem,2.2vw,1.2rem);text-shadow:0 2px 10px rgba(0,0,0,.3)}
 
-    .gift-icon{ font-size:clamp(4rem,12vw,6rem); margin-bottom:12px; animation:giftFloat 3s ease-in-out infinite; }
-    @keyframes giftFloat{ 0%,100%{transform:translateY(0) rotate(0)} 50%{transform:translateY(-10px) rotate(5deg)} }
-    .gift-label{ font-family:'Playfair Display', serif; font-size:clamp(1rem,3vw,1.25rem); font-weight:600; color:var(--white); text-shadow:0 2px 10px rgba(0,0,0,.3); }
-
-    .instruction-text{ margin-top:32px; font-size:clamp(.9rem,2.5vw,1.1rem); color:var(--secondary); text-align:center; font-weight:400; animation:pulse 2s ease-in-out infinite; }
-    @keyframes pulse{ 0%,100%{opacity:1} 50%{opacity:.6} }
+    .instruction-text{margin-top:28px;font-size:clamp(.95rem,2.2vw,1.05rem);color:var(--secondary);text-align:center;font-weight:500;animation:pulse 2s ease-in-out infinite}
+    @keyframes pulse{0%,100%{opacity:1}50%{opacity:.6}}
 
     /* Modal */
-    .result-modal{
-      position:fixed; inset:0; background:rgba(0,0,0,.85); backdrop-filter:blur(10px);
-      display:none; align-items:center; justify-content:center; z-index:1000; padding:20px; animation:fadeIn .3s ease;
-    }
-    .result-modal.show{ display:flex; }
-    @keyframes fadeIn{ from{opacity:0} to{opacity:1} }
-
+    .result-modal{position:fixed;inset:0;background:rgba(0,0,0,.85);backdrop-filter:blur(10px);display:none;align-items:center;justify-content:center;z-index:1000;padding:20px;animation:fadeIn .3s ease}
+    .result-modal.show{display:flex}
+    @keyframes fadeIn{from{opacity:0}to{opacity:1}}
     .modal-content{
-      background:linear-gradient(135deg,var(--dark-soft) 0%, var(--dark) 100%);
-      border-radius:24px; padding:clamp(30px,6vw,50px); max-width:500px; width:100%; text-align:center; position:relative;
-      border:2px solid var(--primary);
-      box-shadow:0 30px 80px rgba(0,0,0,.5), 0 0 0 1px rgba(255,140,66,.3), inset 0 1px 0 rgba(255,255,255,.05);
-      animation:modalSlideIn .5s cubic-bezier(.68,-.55,.265,1.55);
+      background:linear-gradient(135deg,var(--dark-soft) 0%,var(--dark) 100%);
+      border-radius:22px;padding:clamp(28px,6vw,46px);max-width:500px;width:100%;text-align:center;position:relative;
+      border:1.5px solid var(--primary);
+      box-shadow:0 30px 80px rgba(0,0,0,.5),0 0 0 1px rgba(255,140,66,.25),inset 0 1px 0 rgba(255,255,255,.06);
+      animation:modalIn .5s cubic-bezier(.68,-.55,.265,1.55)
     }
-    @keyframes modalSlideIn{ from{opacity:0; transform:scale(.8) translateY(50px)} to{opacity:1; transform:scale(1) translateY(0)} }
-
-    .modal-datetime{ font-size:.75rem; color:var(--secondary); margin-bottom:20px; font-weight:300; letter-spacing:1px; text-transform:uppercase; }
-    .modal-title{
-      font-family:'Playfair Display', serif; font-size:clamp(1.75rem,5vw,2.5rem); font-weight:700;
-      background:linear-gradient(135deg,var(--accent),var(--secondary));
-      -webkit-background-clip:text; -webkit-text-fill-color:transparent; background-clip:text; margin-bottom:24px;
-    }
-    .prize-display{ background:linear-gradient(135deg,var(--primary),var(--primary-dark)); border-radius:16px; padding:clamp(24px,5vw,36px); margin:24px 0;
-      box-shadow:0 10px 40px rgba(255,140,66,.3), inset 0 1px 0 rgba(255,255,255,.1);
-    }
-    .prize-text{ font-size:clamp(1.5rem,4vw,2rem); font-weight:600; color:var(--white); line-height:1.4; }
-    .prize-description{ font-size:clamp(.85rem,2vw,1rem); color:var(--cream); margin-top:16px; line-height:1.6; opacity:.9; }
+    @keyframes modalIn{from{opacity:0;transform:scale(.85) translateY(40px)}to{opacity:1;transform:scale(1) translateY(0)}}
+    .modal-datetime{font-size:.85rem;color:var(--secondary);margin-bottom:18px;letter-spacing:.2px}
+    .modal-title{font-family:'Bodoni Moda', serif;font-size:clamp(1.7rem,5vw,2.4rem);font-weight:700;background:linear-gradient(135deg,var(--accent),var(--secondary));-webkit-background-clip:text;background-clip:text;-webkit-text-fill-color:transparent;margin-bottom:18px}
+    .prize-display{background:linear-gradient(135deg,var(--primary),var(--primary-dark));border-radius:14px;padding:clamp(22px,5vw,34px);margin:22px 0;box-shadow:0 10px 40px rgba(255,140,66,.3),inset 0 1px 0 rgba(255,255,255,.1)}
+    .prize-text{font-size:clamp(1.4rem,4vw,1.9rem);font-weight:600;color:var(--white)}
+    .prize-description{font-size:.95rem;color:rgba(255,248,240,.9);margin-top:12px}
 
     .modal-button{
       background:linear-gradient(135deg,var(--primary),var(--primary-dark)); color:var(--white); border:none;
-      padding:16px 48px; font-size:1rem; font-weight:600; border-radius:50px; cursor:pointer; margin-top:24px;
-      transition:all .3s ease; text-transform:uppercase; letter-spacing:1px; box-shadow:0 10px 30px rgba(255,140,66,.4);
+      padding:14px 40px; font-size:1rem; font-weight:600; border-radius:999px; cursor:pointer; margin-top:20px;
+      transition:transform .2s ease, box-shadow .2s ease; letter-spacing:.2px; box-shadow:0 10px 30px rgba(255,140,66,.4)
     }
-    .modal-button:hover{ transform:translateY(-2px); box-shadow:0 15px 40px rgba(255,140,66,.5); }
-    .modal-button:active{ transform:translateY(0); }
+    .modal-button:hover{transform:translateY(-2px);box-shadow:0 14px 38px rgba(255,140,66,.5)}
+    .modal-button:active{transform:translateY(0)}
 
     /* Confetti */
-    .confetti-piece{
-      position:fixed; width:10px; height:10px; background:var(--accent); top:-10px; z-index:999;
-      animation:confettiFall linear forwards;
-    }
-    @keyframes confettiFall{ to{ transform:translateY(100vh) rotateZ(720deg); opacity:0; } }
+    .confetti-piece{position:fixed;width:10px;height:10px;background:var(--accent);top:-10px;z-index:999;animation:confettiFall linear forwards}
+    @keyframes confettiFall{to{transform:translateY(100vh) rotateZ(720deg);opacity:0}}
 
     /* Footer */
     .footer{
-      position:fixed; bottom:0; left:0; right:0; padding:18px; text-align:center;
-      font-size:.75rem; color:var(--secondary); opacity:.7; z-index:1;
-      display:flex; gap:12px; align-items:center; justify-content:center; flex-wrap:wrap;
+      position:fixed;bottom:0;left:0;right:0;padding:16px;text-align:center;
+      font-size:.8rem;color:var(--secondary);opacity:.8;z-index:1;
+      display:flex;gap:12px;align-items:center;justify-content:center;flex-wrap:wrap
     }
-    .reset-link{
-      color:var(--accent); cursor:pointer; text-decoration:none; opacity:.9;
-    }
-    .reset-link:hover{ text-decoration:underline; }
+    .reset-link{color:var(--accent);cursor:pointer;text-decoration:none}
+    .reset-link:hover{text-decoration:underline}
 
-    /* Responsive & a11y */
-    @media (max-width:768px){ .header-section{margin-bottom:40px} .event-badge{font-size:.65rem; padding:6px 18px} .modal-content{margin:20px} .footer{font-size:.7rem; padding:14px} }
-    @media (max-width:480px){ .container{padding:15px} .gift-box{border-radius:20px} .modal-content{border-radius:20px; padding:30px 20px} }
-    @media (prefers-reduced-motion:reduce){ *,*::before,*::after{ animation-duration:.01ms!important; animation-iteration-count:1!important; transition-duration:.01ms!important; } }
+    @media (max-width:768px){.header-section{margin-bottom:44px}.event-badge{font-size:.75rem;padding:7px 16px}.modal-content{margin:18px}}
+    @media (max-width:480px){.container{padding:14px}.gift-box{border-radius:20px}.modal-content{border-radius:18px;padding:26px 18px}}
+    @media (prefers-reduced-motion:reduce){*,*::before,*::after{animation-duration:.01ms!important;animation-iteration-count:1!important;transition-duration:.01ms!important}}
   </style>
 </head>
 <body>
@@ -185,9 +136,7 @@
   <div id="preloader" aria-hidden="true">
     <img src="assets/logo.png" id="logo" alt="Casino Fénix">
     <div class="loading-progress">
-      <div class="progress-bar-container">
-        <div class="progress-bar-fill" id="progressBar"></div>
-      </div>
+      <div class="progress-bar-container"><div class="progress-bar-fill" id="progressBar"></div></div>
       <div class="progress-text" id="progressText">0%</div>
     </div>
   </div>
@@ -196,7 +145,7 @@
   <div class="container">
     <div class="header-section" role="banner">
       <div class="event-badge">Día de la Madre 2025</div>
-      <h1>Un Regalo Especial<br>Para Mamá</h1>
+      <h1>Un regalo especial para mamá</h1>
       <p class="subtitle">Celebramos a las madres con premios exclusivos. Descubrí tu sorpresa especial.</p>
     </div>
 
@@ -204,7 +153,7 @@
       <div class="gift-container">
         <div class="gift-box" id="giftBox" aria-label="Abrir regalo">
           <div class="gift-icon" aria-hidden="true">🎁</div>
-          <div class="gift-label">Tu Regalo</div>
+          <div class="gift-label">Tu regalo</div>
         </div>
       </div>
       <div class="instruction-text" id="instructionText">Tocá el regalo para descubrir tu premio</div>
@@ -216,9 +165,7 @@
     <div class="modal-content">
       <div class="modal-datetime" id="datetime"></div>
       <h2 class="modal-title">¡Felicitaciones!</h2>
-      <div class="prize-display">
-        <div class="prize-text" id="premioText"></div>
-      </div>
+      <div class="prize-display"><div class="prize-text" id="premioText"></div></div>
       <p class="prize-description">Tu premio ha sido acreditado. ¡Disfrutá de este regalo especial del Día de la Madre!</p>
       <button class="modal-button" onclick="cerrarModal()">Aceptar</button>
     </div>
@@ -234,121 +181,82 @@
   <audio id="audio" src="assets/sound.mp3"></audio>
 
   <script>
-    // Premios
-    const premios = [
-      "🎉 3.000 Fichas Gratis",
+    const premios=[
+      "🎉 3.000 fichas gratis",
       "🔥 Bono del 200%",
       "💥 Bono del 150%",
       "🎁 Bono del 100%",
-      "💸 10.000 Fichas Gratis"
+      "💸 10.000 fichas gratis"
     ];
+    const giftBox=document.getElementById("giftBox");
+    const resultModal=document.getElementById("resultModal");
+    const premioText=document.getElementById("premioText");
+    const instructionText=document.getElementById("instructionText");
+    const audio=document.getElementById("audio");
+    const preloader=document.getElementById("preloader");
+    const progressBar=document.getElementById("progressBar");
+    const progressText=document.getElementById("progressText");
+    const resetBtn=document.getElementById("resetBtn");
 
-    // DOM
-    const giftBox = document.getElementById("giftBox");
-    const resultModal = document.getElementById("resultModal");
-    const premioText = document.getElementById("premioText");
-    const instructionText = document.getElementById("instructionText");
-    const audio = document.getElementById("audio");
-    const preloader = document.getElementById("preloader");
-    const progressBar = document.getElementById("progressBar");
-    const progressText = document.getElementById("progressText");
-    const resetBtn = document.getElementById("resetBtn");
-
-    // Estado previo
-    if (localStorage.getItem("premioFenix")) {
+    if(localStorage.getItem("premioFenix")){
       giftBox.classList.add("opened");
-      instructionText.textContent = "Ya reclamaste tu premio";
-      instructionText.style.opacity = "0.5";
+      instructionText.textContent="Ya reclamaste tu premio";
+      instructionText.style.opacity="0.6";
     }
 
-    // Preloader con barra de progreso
-    window.addEventListener('load', function () {
-      let progress = 0;
-      const interval = setInterval(() => {
-        progress += Math.random() * 15 + 5;
-        if (progress >= 100) {
-          progress = 100;
-          clearInterval(interval);
-          setTimeout(() => preloader.classList.add('hidden'), 300);
-        }
-        progressBar.style.width = progress + '%';
-        progressText.textContent = Math.floor(progress) + '%';
-      }, 100);
+    window.addEventListener('load',function(){
+      let p=0; const i=setInterval(()=>{
+        p+=Math.random()*15+5;
+        if(p>=100){p=100;clearInterval(i);setTimeout(()=>preloader.classList.add('hidden'),300);}
+        progressBar.style.width=p+'%';progressText.textContent=Math.floor(p)+'%';
+      },100);
     });
 
-    // Click caja
-    giftBox.addEventListener("click", () => {
-      const guardado = localStorage.getItem("premioFenix");
-      if (guardado) { mostrarPremio(guardado); return; }
-
-      const premio = premios[Math.floor(Math.random() * premios.length)];
-      localStorage.setItem("premioFenix", premio);
-
+    giftBox.addEventListener("click",()=>{
+      const g=localStorage.getItem("premioFenix");
+      if(g){mostrarPremio(g);return;}
+      const premio=premios[Math.floor(Math.random()*premios.length)];
+      localStorage.setItem("premioFenix",premio);
       giftBox.classList.add("opened");
-      instructionText.style.opacity = "0";
-
-      setTimeout(() => {
-        mostrarPremio(premio);
-        lanzarConfetti();
-        audio.play().catch(()=>{});
-      }, 800);
+      instructionText.style.opacity="0";
+      setTimeout(()=>{mostrarPremio(premio);lanzarConfetti();audio.play().catch(()=>{});},800);
     });
 
-    function mostrarPremio(premio) {
-      const ahora = new Date();
-      const opciones = { year:'numeric', month:'long', day:'numeric', hour:'2-digit', minute:'2-digit' };
-      document.getElementById("datetime").textContent = ahora.toLocaleDateString('es-AR', opciones);
-      premioText.textContent = premio;
+    function mostrarPremio(p){
+      const ahora=new Date();
+      const opt={year:'numeric',month:'long',day:'numeric',hour:'2-digit',minute:'2-digit'};
+      document.getElementById("datetime").textContent=ahora.toLocaleDateString('es-AR',opt);
+      premioText.textContent=p;
       resultModal.classList.add('show');
     }
-
-    function cerrarModal() {
+    function cerrarModal(){
       resultModal.classList.remove('show');
-      instructionText.textContent = "Ya reclamaste tu premio";
-      instructionText.style.opacity = "0.5";
+      instructionText.textContent="Ya reclamaste tu premio";
+      instructionText.style.opacity="0.6";
     }
-
-    function lanzarConfetti() {
-      const colors = ['#FFD700', '#FF8C42', '#FFB366', '#FFF8F0', '#E67A2E'];
-      for (let i=0; i<100; i++) {
-        setTimeout(() => {
-          const c = document.createElement("div");
-          c.className = "confetti-piece";
-          c.style.left = Math.random()*100 + '%';
-          c.style.background = colors[Math.floor(Math.random()*colors.length)];
-          c.style.width = (Math.random()*8 + 6) + 'px';
-          c.style.height = (Math.random()*8 + 6) + 'px';
-          c.style.animationDuration = (Math.random()*2 + 2) + 's';
-          c.style.animationDelay = (Math.random()*0.5) + 's';
-          document.body.appendChild(c);
-          setTimeout(() => c.remove(), 4000);
-        }, i*30);
+    function lanzarConfetti(){
+      const colors=['#FFD700','#FF8C42','#FFB366','#FFF8F0','#E67A2E'];
+      for(let i=0;i<100;i++){
+        setTimeout(()=>{const c=document.createElement("div");
+          c.className="confetti-piece"; c.style.left=Math.random()*100+'%';
+          c.style.background=colors[Math.floor(Math.random()*colors.length)];
+          c.style.width=(Math.random()*8+6)+'px'; c.style.height=(Math.random()*8+6)+'px';
+          c.style.animationDuration=(Math.random()*2+2)+'s'; c.style.animationDelay=(Math.random()*0.5)+'s';
+          document.body.appendChild(c); setTimeout(()=>c.remove(),4000);
+        },i*30);
       }
     }
+    resultModal.addEventListener('click',(e)=>{if(e.target===resultModal)cerrarModal();});
 
-    // Cerrar modal clickeando fuera
-    resultModal.addEventListener('click', (e) => { if (e.target === resultModal) cerrarModal(); });
-
-    // === Reset del beneficio ===
-    function resetPremio(silencioso=false){
+    function resetPremio(){
       localStorage.removeItem("premioFenix");
       giftBox.classList.remove("opened");
-      instructionText.textContent = "Tocá el regalo para descubrir tu premio";
-      instructionText.style.opacity = "1";
-      if(!silencioso) alert("Premio reiniciado. Podés volver a reclamarlo.");
+      instructionText.textContent="Tocá el regalo para descubrir tu premio";
+      instructionText.style.opacity="1";
+      alert("Premio reiniciado. Podés volver a reclamarlo.");
     }
-
-    // Botón del footer
-    resetBtn.addEventListener('click', () => {
-      if (confirm("¿Reiniciar el premio para volver a usarlo?")) resetPremio();
-    });
-
-    // Atajo de teclado: tecla R
-    document.addEventListener('keydown', (e)=>{
-      if (e.key.toLowerCase() === 'r') {
-        if (confirm("Atajo R: ¿Reiniciar el premio?")) resetPremio();
-      }
-    });
+    resetBtn.addEventListener('click',()=>{ if(confirm("¿Reiniciar el premio?")) resetPremio(); });
+    document.addEventListener('keydown',(e)=>{ if(e.key.toLowerCase()==='r'){ if(confirm("Atajo R: ¿reiniciar premio?")) resetPremio(); }});
   </script>
 </body>
 </html>
