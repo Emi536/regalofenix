@@ -8,7 +8,6 @@
   <!-- Fuentes -->
   <link rel="preconnect" href="https://fonts.googleapis.com">
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-  <!-- Nuevas familias: Cinzel (display), Teko (UI), Inter (body) -->
   <link href="https://fonts.googleapis.com/css2?family=Cinzel:wght@600;700;800&family=Inter:wght@400;500;600&family=Teko:wght@500;600&display=swap" rel="stylesheet">
 
   <style>
@@ -19,7 +18,6 @@
       --primary:#FF8C42; --primary-dark:#E67A2E; --secondary:#FFB366; --accent:#FFD700;
       --dark:#1A1A1A; --dark-soft:#2A2A2A; --cream:#FFF8F0; --white:#FFFFFF;
 
-      /* Tipografías */
       --ff-body:'Inter', system-ui, -apple-system, Segoe UI, Roboto, Arial, sans-serif;
       --ff-display:'Cinzel', serif;
       --ff-ui:'Teko', sans-serif;
@@ -87,17 +85,23 @@
     }
 
     /* Gift */
-    .gift-wrapper{animation:fadeInUp 1s ease .25s both; margin-top:12px; width:100%}
+    .gift-wrapper{
+      animation:fadeInUp 1s ease .25s both; margin-top:12px;
+      /* ---- FIX DE CENTRADO ABSOLUTO ---- */
+      width:100%;
+      display:grid;
+      place-items:center;   /* centra vertical/horizontal el contenido del wrapper */
+    }
     @keyframes fadeInUp{from{opacity:0;transform:translateY(30px)}to{opacity:1;transform:translateY(0)}}
 
-    /* *** FIX DE CENTRADO *** */
     .gift-container{
       perspective:1000px;
       width:100%;
-      display:flex;                 /* centra horizontalmente */
+      max-width:100%;
+      display:flex;                 
       justify-content:center;
       align-items:center;
-      text-align:center;            /* por si se renderiza inline */
+      text-align:center;
     }
 
     .gift-box{
@@ -105,7 +109,7 @@
       background:linear-gradient(135deg,var(--primary) 0%,var(--primary-dark) 100%);
       border-radius:22px;display:flex;flex-direction:column;justify-content:center;align-items:center;
       cursor:pointer;transition:all .35s cubic-bezier(.4,0,.2,1); margin-top:24px;
-      margin-left:auto; margin-right:auto;  /* refuerzo extra de centrado */
+      margin-left:auto; margin-right:auto; /* refuerzo extra */
       box-shadow:
         0 22px 62px rgba(255,140,66,.42),
         0 0 0 1px rgba(255,215,0,.18),
@@ -171,8 +175,12 @@
     .modal-button:hover{transform:translateY(-2px);box-shadow:0 14px 38px rgba(255,140,66,.5)}
     .modal-button:active{transform:translateY(0)}
 
-    /* Confetti */
-    .confetti-piece{position:fixed;width:10px;height:10px;background:var(--accent);top:-10px;z-index:999;animation:confettiFall linear forwards}
+    /* Confetti (z-index por encima del modal) */
+    .confetti-piece{
+      position:fixed; width:10px; height:10px; background:var(--accent);
+      top:-10px; z-index:2001; animation:confettiFall linear forwards;
+      will-change:transform, opacity;
+    }
     @keyframes confettiFall{to{transform:translateY(100vh) rotateZ(720deg);opacity:0}}
 
     /* Footer */
@@ -275,7 +283,7 @@
     // Interacción caja
     giftBox.addEventListener("click",()=>{
       const g=localStorage.getItem("premioFenix");
-      if(g){mostrarPremio(g);return;}
+      if(g){mostrarPremio(g);lanzarConfetti();audio.play().catch(()=>{});return;}
       const premio=premios[Math.floor(Math.random()*premios.length)];
       localStorage.setItem("premioFenix",premio);
       giftBox.classList.add("opened");
@@ -296,17 +304,23 @@
       instructionText.style.opacity="0.6";
     }
 
-    // Confetti
+    // Confetti por encima del modal y siempre en viewport
     function lanzarConfetti(){
       const colors=['#FFD700','#FF8C42','#FFB366','#FFF8F0','#E67A2E'];
-      for(let i=0;i<100;i++){
-        setTimeout(()=>{const c=document.createElement("div");
-          c.className="confetti-piece"; c.style.left=Math.random()*100+'%';
+      const total=100;
+      for(let i=0;i<total;i++){
+        setTimeout(()=>{
+          const c=document.createElement("div");
+          c.className="confetti-piece";
+          c.style.left=Math.random()*100+'vw';                // relativo al viewport
           c.style.background=colors[Math.floor(Math.random()*colors.length)];
-          c.style.width=(Math.random()*8+6)+'px'; c.style.height=(Math.random()*8+6)+'px';
-          c.style.animationDuration=(Math.random()*2+2)+'s'; c.style.animationDelay=(Math.random()*0.5)+'s';
-          document.body.appendChild(c); setTimeout(()=>c.remove(),4000);
-        },i*30);
+          c.style.width=(Math.random()*8+6)+'px';
+          c.style.height=(Math.random()*8+6)+'px';
+          c.style.animationDuration=(Math.random()*2+2)+'s';
+          c.style.animationDelay=(Math.random()*0.4)+'s';
+          document.body.appendChild(c);
+          setTimeout(()=>c.remove(),4000);
+        },i*25);
       }
     }
     resultModal.addEventListener('click',(e)=>{if(e.target===resultModal)cerrarModal();});
@@ -317,7 +331,7 @@
       giftBox.classList.remove("opened");
       instructionText.textContent="Tocá el regalo para descubrir tu premio";
       instructionText.style.opacity="1";
-      // refuerzo visual: re-centrar por si el DOM cambió su altura
+      // refuerzo visual de centrado tras cambios de DOM:
       giftBox.style.marginLeft='auto'; giftBox.style.marginRight='auto';
       alert("Premio reiniciado. Podés volver a reclamarlo.");
     }
