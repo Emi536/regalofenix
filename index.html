@@ -87,29 +87,24 @@
     /* Gift */
     .gift-wrapper{
       animation:fadeInUp 1s ease .25s both; margin-top:12px;
-      /* ---- FIX DE CENTRADO ABSOLUTO ---- */
       width:100%;
       display:grid;
-      place-items:center;   /* centra vertical/horizontal el contenido del wrapper */
+      place-items:center;
     }
     @keyframes fadeInUp{from{opacity:0;transform:translateY(30px)}to{opacity:1;transform:translateY(0)}}
 
     .gift-container{
       perspective:1000px;
-      width:100%;
-      max-width:100%;
-      display:flex;                 
-      justify-content:center;
-      align-items:center;
-      text-align:center;
+      width:100%; max-width:100%;
+      display:flex; justify-content:center; align-items:center; text-align:center;
     }
 
     .gift-box{
-      width:clamp(200px,40vw,280px);height:clamp(200px,40vw,280px);
+      width:clamp(200px,40vw,280px); height:clamp(200px,40vw,280px);
       background:linear-gradient(135deg,var(--primary) 0%,var(--primary-dark) 100%);
-      border-radius:22px;display:flex;flex-direction:column;justify-content:center;align-items:center;
-      cursor:pointer;transition:all .35s cubic-bezier(.4,0,.2,1); margin-top:24px;
-      margin-left:auto; margin-right:auto; /* refuerzo extra */
+      border-radius:22px; display:flex; flex-direction:column; justify-content:center; align-items:center;
+      cursor:pointer; transition:all .35s cubic-bezier(.4,0,.2,1); margin-top:24px;
+      margin-left:auto; margin-right:auto;
       box-shadow:
         0 22px 62px rgba(255,140,66,.42),
         0 0 0 1px rgba(255,215,0,.18),
@@ -175,13 +170,30 @@
     .modal-button:hover{transform:translateY(-2px);box-shadow:0 14px 38px rgba(255,140,66,.5)}
     .modal-button:active{transform:translateY(0)}
 
-    /* Confetti (z-index por encima del modal) */
-    .confetti-piece{
-      position:fixed; width:10px; height:10px; background:var(--accent);
-      top:-10px; z-index:2001; animation:confettiFall linear forwards;
-      will-change:transform, opacity;
+    /* ===== Confetti: contenedor + animaciones en cascada ===== */
+    #confetti{
+      position:fixed; inset:0; overflow:hidden; pointer-events:none; z-index:2002;
     }
-    @keyframes confettiFall{to{transform:translateY(100vh) rotateZ(720deg);opacity:0}}
+    .confetti-piece{
+      position:absolute;
+      top:-10vh;                 /* arranca fuera de pantalla */
+      left:0;
+      width:10px; height:10px; background:var(--accent);
+      border-radius:2px;
+      will-change:top,left,transform,opacity;
+      /* tres animaciones simultáneas que no se pisan */
+      animation:
+        fall var(--t,3s) linear forwards,
+        sway var(--tsway,2s) ease-in-out var(--delay,0s) infinite alternate,
+        spin var(--tspin,1.6s) linear infinite;
+      opacity:.95;
+    }
+    @keyframes fall { to { top:110vh; opacity:.0; } }
+    @keyframes sway {
+      from { left: calc(var(--x,50) * 1vw - var(--amp,3vw)); }
+      to   { left: calc(var(--x,50) * 1vw + var(--amp,3vw)); }
+    }
+    @keyframes spin { from { transform:rotate(0deg) } to { transform:rotate(720deg) } }
 
     /* Footer */
     .footer{
@@ -206,6 +218,9 @@
       <div class="progress-text" id="progressText">0%</div>
     </div>
   </div>
+
+  <!-- Contenedor de confeti -->
+  <div id="confetti"></div>
 
   <!-- Main -->
   <div class="container">
@@ -263,6 +278,7 @@
     const progressBar=document.getElementById("progressBar");
     const progressText=document.getElementById("progressText");
     const resetBtn=document.getElementById("resetBtn");
+    const confettiLayer=document.getElementById("confetti");
 
     // Estado previo
     if(localStorage.getItem("premioFenix")){
@@ -292,6 +308,9 @@
     });
 
     function mostrarPremio(p){
+      // nos aseguramos de estar en la parte superior para ver el confeti completo
+      window.scrollTo(0,0);
+
       const ahora=new Date();
       const opt={year:'numeric',month:'long',day:'numeric',hour:'2-digit',minute:'2-digit'};
       document.getElementById("datetime").textContent=ahora.toLocaleDateString('es-AR',opt);
@@ -304,23 +323,37 @@
       instructionText.style.opacity="0.6";
     }
 
-    // Confetti por encima del modal y siempre en viewport
+    // Confeti en cascada
     function lanzarConfetti(){
+      // limpia confeti previo si existía
+      confettiLayer.innerHTML='';
       const colors=['#FFD700','#FF8C42','#FFB366','#FFF8F0','#E67A2E'];
-      const total=100;
+      const total=120;
       for(let i=0;i<total;i++){
-        setTimeout(()=>{
-          const c=document.createElement("div");
-          c.className="confetti-piece";
-          c.style.left=Math.random()*100+'vw';                // relativo al viewport
-          c.style.background=colors[Math.floor(Math.random()*colors.length)];
-          c.style.width=(Math.random()*8+6)+'px';
-          c.style.height=(Math.random()*8+6)+'px';
-          c.style.animationDuration=(Math.random()*2+2)+'s';
-          c.style.animationDelay=(Math.random()*0.4)+'s';
-          document.body.appendChild(c);
-          setTimeout(()=>c.remove(),4000);
-        },i*25);
+        const c=document.createElement("div");
+        c.className="confetti-piece";
+        const x=Math.random()*100;           // columna base en vw
+        const amp=(Math.random()*6+2)+'vw';  // amplitud del bamboleo
+        const size=(Math.random()*8+6);      // tamaño
+        const t=(Math.random()*1.5+2.5)+'s'; // tiempo de caída
+        const tsway=(Math.random()*1.5+1.6)+'s';
+        const tspin=(Math.random()*1.2+1)+'s';
+        const delay=(Math.random()*0.6)+'s'; // pequeño delay en cascada
+
+        c.style.setProperty('--x', x);
+        c.style.setProperty('--amp', amp);
+        c.style.setProperty('--t', t);
+        c.style.setProperty('--tsway', tsway);
+        c.style.setProperty('--tspin', tspin);
+        c.style.setProperty('--delay', delay);
+
+        c.style.width=size+'px';
+        c.style.height=size+'px';
+        c.style.background=colors[Math.floor(Math.random()*colors.length)];
+
+        confettiLayer.appendChild(c);
+        // auto-remover cada pieza
+        setTimeout(()=>c.remove(), 5000);
       }
     }
     resultModal.addEventListener('click',(e)=>{if(e.target===resultModal)cerrarModal();});
@@ -331,7 +364,6 @@
       giftBox.classList.remove("opened");
       instructionText.textContent="Tocá el regalo para descubrir tu premio";
       instructionText.style.opacity="1";
-      // refuerzo visual de centrado tras cambios de DOM:
       giftBox.style.marginLeft='auto'; giftBox.style.marginRight='auto';
       alert("Premio reiniciado. Podés volver a reclamarlo.");
     }
