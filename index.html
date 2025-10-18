@@ -8,7 +8,8 @@
   <!-- Fuentes -->
   <link rel="preconnect" href="https://fonts.googleapis.com">
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-  <link href="https://fonts.googleapis.com/css2?family=Bodoni+Moda:wght@600;700;800&family=Plus+Jakarta+Sans:wght@400;500;600&display=swap" rel="stylesheet">
+  <!-- Nuevas familias: Cinzel (display), Teko (UI), Inter (body) -->
+  <link href="https://fonts.googleapis.com/css2?family=Cinzel:wght@600;700;800&family=Inter:wght@400;500;600&family=Teko:wght@500;600&display=swap" rel="stylesheet">
 
   <style>
     *{margin:0;padding:0;box-sizing:border-box}
@@ -17,10 +18,15 @@
     :root{
       --primary:#FF8C42; --primary-dark:#E67A2E; --secondary:#FFB366; --accent:#FFD700;
       --dark:#1A1A1A; --dark-soft:#2A2A2A; --cream:#FFF8F0; --white:#FFFFFF;
+
+      /* Tipografías */
+      --ff-body:'Inter', system-ui, -apple-system, Segoe UI, Roboto, Arial, sans-serif;
+      --ff-display:'Cinzel', serif;
+      --ff-ui:'Teko', sans-serif;
     }
 
     body{
-      font-family:'Plus Jakarta Sans', system-ui, -apple-system, Segoe UI, Roboto, Arial, sans-serif;
+      font-family:var(--ff-body);
       background:linear-gradient(135deg,var(--dark) 0%,var(--dark-soft) 50%,#3A2A1A 100%);
       min-height:100vh;color:var(--cream);overflow-x:hidden;position:relative;
       letter-spacing:.1px; line-height:1.6;
@@ -63,13 +69,13 @@
     .event-badge{
       display:inline-block; padding:8px 18px; border-radius:999px;
       background:linear-gradient(135deg,var(--primary),var(--secondary));
-      font-size:.8rem; font-weight:600; letter-spacing:.4px; color:var(--white);
+      font-family:var(--ff-ui); font-size:clamp(.8rem,2.2vw,.95rem); line-height:1; letter-spacing:.4px; color:var(--white);
       margin-bottom:18px; box-shadow:0 4px 20px rgba(255,140,66,.3);
-      text-transform:none;
+      text-transform:uppercase;
     }
 
     h1{
-      font-family:'Bodoni Moda', serif; font-weight:700; line-height:1.15;
+      font-family:var(--ff-display); font-weight:700; line-height:1.12;
       font-size:clamp(2.2rem,5vw,3.6rem); margin-bottom:14px; letter-spacing:.2px;
       background:linear-gradient(135deg,var(--accent),var(--secondary));
       -webkit-background-clip:text; background-clip:text; -webkit-text-fill-color:transparent;
@@ -77,18 +83,29 @@
     }
     .subtitle{
       max-width:620px; margin:0 auto;
-      color:rgba(255,248,240,.92); font-size:clamp(1rem,2.2vw,1.15rem);
+      color:rgba(255,248,240,.92); font-size:clamp(1rem,2.2vw,1.1rem);
     }
 
     /* Gift */
-    .gift-wrapper{animation:fadeInUp 1s ease .25s both; margin-top:12px}
+    .gift-wrapper{animation:fadeInUp 1s ease .25s both; margin-top:12px; width:100%}
     @keyframes fadeInUp{from{opacity:0;transform:translateY(30px)}to{opacity:1;transform:translateY(0)}}
-    .gift-container{perspective:1000px}
+
+    /* *** FIX DE CENTRADO *** */
+    .gift-container{
+      perspective:1000px;
+      width:100%;
+      display:flex;                 /* centra horizontalmente */
+      justify-content:center;
+      align-items:center;
+      text-align:center;            /* por si se renderiza inline */
+    }
+
     .gift-box{
       width:clamp(200px,40vw,280px);height:clamp(200px,40vw,280px);
       background:linear-gradient(135deg,var(--primary) 0%,var(--primary-dark) 100%);
       border-radius:22px;display:flex;flex-direction:column;justify-content:center;align-items:center;
       cursor:pointer;transition:all .35s cubic-bezier(.4,0,.2,1); margin-top:24px;
+      margin-left:auto; margin-right:auto;  /* refuerzo extra de centrado */
       box-shadow:
         0 22px 62px rgba(255,140,66,.42),
         0 0 0 1px rgba(255,215,0,.18),
@@ -96,19 +113,21 @@
         0 0 35px rgba(255,174,0,.25);
     }
     .gift-box:hover{transform:translateY(-6px) scale(1.015);box-shadow:0 28px 72px rgba(255,140,66,.5),0 0 0 1px rgba(255,215,0,.28),inset 0 1px 0 rgba(255,255,255,.2)}
-    .gift-box.opened{animation:giftOpen .8s cubic-bezier(.68,-.55,.265,1.55);pointer-events:none}
+    .gift-box.opened{animation:giftOpen .8s cubic-bezier(.68,-.55,.265,1.55);pointer-events:none;transform-origin:center}
     @keyframes giftOpen{0%{transform:scale(1) rotateY(0)}50%{transform:scale(1.08) rotateY(180deg)}100%{transform:scale(.96) rotateY(360deg)}}
-    .gift-icon{font-size:clamp(4rem,12vw,6rem);margin-bottom:10px;animation:giftFloat 3s ease-in-out infinite}
+    .gift-icon{font-size:clamp(4rem,12vw,6rem);margin-bottom:8px;animation:giftFloat 3s ease-in-out infinite}
     @keyframes giftFloat{0%,100%{transform:translateY(0) rotate(0)}50%{transform:translateY(-10px) rotate(5deg)}}
+
     .gift-label{
-      font-family:'Bodoni Moda', serif; font-weight:700;
+      font-family:var(--ff-display); font-weight:700;
       font-size:clamp(1.1rem,2.4vw,1.35rem); letter-spacing:.3px; color:#fff;
       text-shadow:0 2px 10px rgba(0,0,0,.35);
     }
 
     .instruction-text{
-      margin-top:26px; font-size:clamp(.95rem,2.2vw,1.05rem); color:var(--secondary);
-      text-align:center; font-weight:500; animation:pulse 2s ease-in-out infinite; letter-spacing:.2px;
+      margin-top:26px; font-family:var(--ff-ui); letter-spacing:.3px;
+      font-size:clamp(1rem,2.2vw,1.15rem); color:var(--secondary);
+      text-align:center; font-weight:600; animation:pulse 2s ease-in-out infinite; text-transform:none;
     }
     @keyframes pulse{0%,100%{opacity:1}50%{opacity:.6}}
 
@@ -124,22 +143,30 @@
       animation:modalIn .5s cubic-bezier(.68,-.55,.265,1.55)
     }
     @keyframes modalIn{from{opacity:0;transform:scale(.85) translateY(40px)}to{opacity:1;transform:scale(1) translateY(0)}}
-    .modal-datetime{font-size:.85rem;color:var(--secondary);margin-bottom:18px;letter-spacing:.2px}
+    .modal-datetime{font-size:.85rem;color:var(--secondary);margin-bottom:12px;letter-spacing:.2px}
     .modal-title{
-      font-family:'Bodoni Moda', serif;font-weight:700;
+      font-family:var(--ff-display);font-weight:700;
       font-size:clamp(1.7rem,5vw,2.4rem);
       background:linear-gradient(135deg,var(--accent),var(--secondary));
       -webkit-background-clip:text;background-clip:text;-webkit-text-fill-color:transparent;
-      margin-bottom:18px
+      margin-bottom:14px
     }
-    .prize-display{background:linear-gradient(135deg,var(--primary),var(--primary-dark));border-radius:14px;padding:clamp(22px,5vw,34px);margin:22px 0;box-shadow:0 10px 40px rgba(255,140,66,.3),inset 0 1px 0 rgba(255,255,255,.1)}
-    .prize-text{font-size:clamp(1.4rem,4vw,1.9rem);font-weight:600;color:var(--white)}
-    .prize-description{font-size:.95rem;color:rgba(255,248,240,.9);margin-top:12px}
+    .prize-display{
+      background:linear-gradient(135deg,var(--primary),var(--primary-dark));
+      border-radius:14px;padding:clamp(22px,5vw,34px);margin:18px 0;
+      box-shadow:0 10px 40px rgba(255,140,66,.3),inset 0 1px 0 rgba(255,255,255,.1)
+    }
+    .prize-text{
+      font-family:var(--ff-ui);letter-spacing:.4px; text-transform:none;
+      font-size:clamp(1.5rem,4.5vw,2rem);font-weight:600;color:var(--white)
+    }
+    .prize-description{font-size:.95rem;color:rgba(255,248,240,.9);margin-top:10px}
 
     .modal-button{
       background:linear-gradient(135deg,var(--primary),var(--primary-dark)); color:var(--white); border:none;
-      padding:14px 40px; font-size:1rem; font-weight:600; border-radius:999px; cursor:pointer; margin-top:20px;
-      transition:transform .2s ease, box-shadow .2s ease; letter-spacing:.2px; box-shadow:0 10px 30px rgba(255,140,66,.4)
+      padding:14px 40px; font-size:1rem; font-weight:700; border-radius:999px; cursor:pointer; margin-top:18px;
+      transition:transform .2s ease, box-shadow .2s ease; letter-spacing:.2px; box-shadow:0 10px 30px rgba(255,140,66,.4);
+      font-family:var(--ff-ui); text-transform:uppercase;
     }
     .modal-button:hover{transform:translateY(-2px);box-shadow:0 14px 38px rgba(255,140,66,.5)}
     .modal-button:active{transform:translateY(0)}
@@ -151,13 +178,13 @@
     /* Footer */
     .footer{
       position:fixed;bottom:0;left:0;right:0;padding:16px;text-align:center;
-      font-size:.8rem;color:var(--secondary);opacity:.8;z-index:1;
+      font-size:.85rem;color:var(--secondary);opacity:.85;z-index:1;
       display:flex;gap:16px;align-items:center;justify-content:center;flex-wrap:wrap
     }
-    .reset-link{color:var(--accent);cursor:pointer;text-decoration:none}
+    .reset-link{color:var(--accent);cursor:pointer;text-decoration:none;font-family:var(--ff-ui);font-weight:600}
     .reset-link:hover{text-decoration:underline}
 
-    @media (max-width:768px){.header-section{margin-bottom:44px}.event-badge{font-size:.75rem;padding:7px 16px}.modal-content{margin:18px}}
+    @media (max-width:768px){.header-section{margin-bottom:44px}.modal-content{margin:18px}}
     @media (max-width:480px){.container{padding:14px}.gift-box{border-radius:20px}.modal-content{border-radius:18px;padding:26px 18px}}
     @media (prefers-reduced-motion:reduce){*,*::before,*::after{animation-duration:.01ms!important;animation-iteration-count:1!important;transition-duration:.01ms!important}}
   </style>
@@ -290,6 +317,8 @@
       giftBox.classList.remove("opened");
       instructionText.textContent="Tocá el regalo para descubrir tu premio";
       instructionText.style.opacity="1";
+      // refuerzo visual: re-centrar por si el DOM cambió su altura
+      giftBox.style.marginLeft='auto'; giftBox.style.marginRight='auto';
       alert("Premio reiniciado. Podés volver a reclamarlo.");
     }
     resetBtn.addEventListener('click',()=>{ if(confirm("¿Reiniciar el premio?")) resetPremio(); });
