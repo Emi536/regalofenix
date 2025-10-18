@@ -173,7 +173,7 @@
     /* ===== Confetti: contenedor + animaciones en cascada ===== */
     #confetti{
       position:fixed; inset:0; overflow:hidden; pointer-events:none;
-      z-index:2147483647; /* máximo práctico para evitar issues con stacking/backdrop */
+      z-index:2147483647;
     }
     .confetti-piece{
       position:absolute;
@@ -194,7 +194,6 @@
     }
     @keyframes spin { from { transform:rotate(0deg) } to { transform:rotate(720deg) } }
 
-    /* Footer */
     .footer{
       position:fixed;bottom:0;left:0;right:0;padding:16px;text-align:center;
       font-size:.85rem;color:var(--secondary);opacity:.85;z-index:1;
@@ -203,12 +202,10 @@
     .reset-link{color:var(--accent);cursor:pointer;text-decoration:none;font-family:var(--ff-ui);font-weight:600}
     .reset-link:hover{text-decoration:underline}
 
-    /* ⚠️ Reducir movimiento: NO tocar confeti */
     @media (prefers-reduced-motion:reduce){
       #logo,.header-section,.gift-box,.gift-icon,.modal-content{
         animation: none !important; transition:none !important;
       }
-      /* el confeti queda activo explícitamente */
       .confetti-piece{
         animation:
           fall var(--t,3s) linear var(--delay,0s) forwards,
@@ -271,7 +268,7 @@
   </div>
 
   <!-- Audio -->
-  <audio id="audio" src="assets/sound.mp3"></audio>
+  <audio id="audio" src="assets/sound.mp3" preload="auto" playsinline></audio>
 
   <script>
     const premios=[
@@ -292,6 +289,34 @@
     const resetBtn=document.getElementById("resetBtn");
     const confettiLayer=document.getElementById("confetti");
 
+    // --- Audio robusto ---
+    function playSFX(){
+      if(!audio) return;
+      try{
+        audio.volume = 1;
+        audio.currentTime = 0;
+        const p = audio.play();
+        if(p && typeof p.then === 'function'){
+          p.catch(()=>{
+            // desbloqueo en el próximo toque/click
+            const unlock = () => {
+              audio.play().catch(()=>{});
+              document.removeEventListener('pointerdown', unlock);
+              document.removeEventListener('touchend', unlock);
+            };
+            document.addEventListener('pointerdown', unlock, { once:true });
+            document.addEventListener('touchend', unlock, { once:true });
+          });
+        }
+      }catch(e){}
+    }
+    // opcional: primer toque en la página desbloquea audio
+    document.addEventListener('touchend', function unlockOnce(){
+      playSFX();
+      audio.pause(); audio.currentTime = 0;
+      document.removeEventListener('touchend', unlockOnce);
+    }, { once:true });
+
     // Estado previo
     if(localStorage.getItem("premioFenix")){
       giftBox.classList.add("opened");
@@ -308,19 +333,24 @@
       },100);
     });
 
-    // Interacción caja
+    // Interacción caja (el sonido se dispara dentro del GESTO)
     giftBox.addEventListener("click",()=>{
       const g=localStorage.getItem("premioFenix");
-      if(g){mostrarPremio(g);lanzarConfetti();audio.play().catch(()=>{});return;}
+      playSFX(); // ← aquí, dentro del gesto del usuario
+      if(g){
+        mostrarPremio(g);
+        lanzarConfetti();
+        return;
+      }
       const premio=premios[Math.floor(Math.random()*premios.length)];
       localStorage.setItem("premioFenix",premio);
       giftBox.classList.add("opened");
       instructionText.style.opacity="0";
-      setTimeout(()=>{mostrarPremio(premio);lanzarConfetti();audio.play().catch(()=>{});},800);
+      setTimeout(()=>{mostrarPremio(premio);lanzarConfetti();},800);
     });
 
     function mostrarPremio(p){
-      window.scrollTo(0,0); // vemos el confeti completo
+      window.scrollTo(0,0);
       const ahora=new Date();
       const opt={year:'numeric',month:'long',day:'numeric',hour:'2-digit',minute:'2-digit'};
       document.getElementById("datetime").textContent=ahora.toLocaleDateString('es-AR',opt);
@@ -341,13 +371,13 @@
       for(let i=0;i<total;i++){
         const c=document.createElement("div");
         c.className="confetti-piece";
-        const x=Math.random()*100;           // columna base en vw
-        const amp=(Math.random()*6+2)+'vw';  // amplitud del bamboleo
-        const size=(Math.random()*8+6);      // tamaño
-        const t=(Math.random()*1.5+2.5)+'s'; // tiempo de caída
+        const x=Math.random()*100;
+        const amp=(Math.random()*6+2)+'vw';
+        const size=(Math.random()*8+6);
+        const t=(Math.random()*1.5+2.5)+'s';
         const tsway=(Math.random()*1.5+1.6)+'s';
         const tspin=(Math.random()*1.2+1)+'s';
-        const delay=(Math.random()*0.7)+'s'; // delay para cascada
+        const delay=(Math.random()*0.7)+'s';
 
         c.style.setProperty('--x', x);
         c.style.setProperty('--amp', amp);
