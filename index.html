@@ -194,7 +194,7 @@
     }
     @keyframes spin { from { transform:rotate(0deg) } to { transform:rotate(720deg) } }
 
-    /* Botón de sonido (puede quedar aunque no haya footer) */
+    /* Botón de sonido */
     .sound-toggle{
       position:fixed; right:14px; bottom:14px; z-index:2147483647;
       background:linear-gradient(135deg,var(--primary),var(--primary-dark));
@@ -261,13 +261,13 @@
     </div>
   </div>
 
-  <!-- Capa de confeti (arriba del modal) -->
+  <!-- Capa de confeti -->
   <div id="confetti"></div>
 
   <!-- Audio -->
   <audio id="audio" src="assets/sound.mp3" preload="auto" playsinline></audio>
 
-  <!-- Toggle sonido (por si el navegador bloquea autoplay) -->
+  <!-- Toggle sonido (autoplay fallback) -->
   <button id="soundToggle" class="sound-toggle" type="button" aria-label="Activar sonido">
     <svg viewBox="0 0 24 24" fill="none"><path d="M3 10v4h4l5 4V6L7 10H3z" stroke="currentColor" stroke-width="2" stroke-linejoin="round"/></svg>
     Activar sonido
@@ -275,26 +275,22 @@
   <div id="soundHint" class="sound-hint" style="display:none;">Toque para habilitar audio</div>
 
   <script>
-    /* =================== CONFIG PREMIOS (ponderados) =================== */
-    // weight = probabilidad relativa (suma 100)
+    /* ===== Probabilidades ponderadas ===== */
     const PREMIOS = [
-      { label:"💸 10.000 FICHAS GRATIS", weight:0.5 },
-      { label:"🎉 3.000 FICHAS GRATIS",   weight:2.0 },
-      { label:"🔥 BONO DEL 200%",        weight:12.0 },
-      { label:"💥 BONO DEL 150%",        weight:25.0 },
-      { label:"🎁 BONO DEL 100%",        weight:60.5 },
+      { label:"💸 10.000 FICHAS GRATIS", weight:0.5  },
+      { label:"🎉 3.000 FICHAS GRATIS",   weight:2.0  },
+      { label:"🔥 BONO DEL 200%",        weight:20.0 },
+      { label:"💥 BONO DEL 150%",        weight:35.0 },
+      { label:"🎁 BONO DEL 100%",        weight:42.5 },
     ];
-
     function pickWeighted(items){
       const total = items.reduce((a,b)=>a+b.weight,0);
       let r = Math.random()*total;
-      for(const it of items){
-        if((r -= it.weight) <= 0) return it.label;
-      }
+      for(const it of items){ if((r -= it.weight) <= 0) return it.label; }
       return items[items.length-1].label;
     }
 
-    /* =================== ELEMENTOS =================== */
+    /* ===== Elementos ===== */
     const giftBox=document.getElementById("giftBox");
     const resultModal=document.getElementById("resultModal");
     const premioText=document.getElementById("premioText");
@@ -307,9 +303,8 @@
     const soundToggle=document.getElementById("soundToggle");
     const soundHint=document.getElementById("soundHint");
 
-    /* =================== AUDIO: autoplay con fallback =================== */
+    /* ===== Audio: autoplay con fallback ===== */
     audio.loop = true;
-
     async function tryAutoPlay(){
       try{
         await audio.play();
@@ -333,7 +328,7 @@
       }
     }
 
-    /* =================== PRELOADER =================== */
+    /* ===== Preloader ===== */
     window.addEventListener('load',function(){
       let p=0; const i=setInterval(()=>{
         p+=Math.random()*15+5;
@@ -343,14 +338,14 @@
       tryAutoPlay();
     });
 
-    /* =================== ESTADO PREVIO =================== */
+    /* ===== Estado previo ===== */
     if(localStorage.getItem("premioFenix")){
       giftBox.classList.add("opened");
       instructionText.textContent="Ya reclamaste tu premio";
       instructionText.style.opacity="0.6";
     }
 
-    /* =================== INTERACCIÓN CAJA =================== */
+    /* ===== Interacción caja ===== */
     giftBox.addEventListener("click",()=>{
       const previo=localStorage.getItem("premioFenix");
       if(previo){
@@ -365,7 +360,7 @@
       setTimeout(()=>{mostrarPremio(premio);lanzarConfetti();},800);
     });
 
-    /* =================== MODAL =================== */
+    /* ===== Modal ===== */
     function mostrarPremio(p){
       window.scrollTo(0,0);
       const ahora=new Date();
@@ -381,7 +376,7 @@
     }
     resultModal.addEventListener('click',(e)=>{if(e.target===resultModal)cerrarModal();});
 
-    /* =================== CONFETI =================== */
+    /* ===== Confeti ===== */
     function lanzarConfetti(){
       confettiLayer.innerHTML='';
       const colors=['#FFD700','#FF8C42','#FFB366','#FFF8F0','#E67A2E'];
@@ -413,7 +408,7 @@
       }
     }
 
-    /* =================== RESET (atajo R) =================== */
+    /* ===== Reset por teclado (R) ===== */
     function resetPremio(){
       localStorage.removeItem("premioFenix");
       giftBox.classList.remove("opened");
