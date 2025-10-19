@@ -194,7 +194,7 @@
     }
     @keyframes spin { from { transform:rotate(0deg) } to { transform:rotate(720deg) } }
 
-    /* Toggle sonido */
+    /* Botón de sonido (puede quedar aunque no haya footer) */
     .sound-toggle{
       position:fixed; right:14px; bottom:14px; z-index:2147483647;
       background:linear-gradient(135deg,var(--primary),var(--primary-dark));
@@ -206,14 +206,6 @@
     .sound-toggle:active{transform:translateY(1px)}
     .sound-toggle svg{width:18px;height:18px}
     .sound-hint{position:fixed; bottom:58px; right:14px; font-size:.8rem; color:var(--secondary); opacity:.9}
-    
-    .footer{
-      position:fixed;bottom:0;left:0;right:0;padding:16px;text-align:center;
-      font-size:.85rem;color:var(--secondary);opacity:.85;z-index:1;
-      display:flex;gap:16px;align-items:center;justify-content:center;flex-wrap:wrap
-    }
-    .reset-link{color:var(--accent);cursor:pointer;text-decoration:none;font-family:var(--ff-ui);font-weight:600}
-    .reset-link:hover{text-decoration:underline}
 
     @media (prefers-reduced-motion:reduce){
       #logo,.header-section,.gift-box,.gift-icon,.modal-content{animation:none !important; transition:none !important;}
@@ -272,53 +264,58 @@
   <!-- Capa de confeti (arriba del modal) -->
   <div id="confetti"></div>
 
-  <!-- Footer -->
-  <div class="footer">
-    <span>Casino Fénix © 2025 — Promoción válida por tiempo limitado</span>
-    <a class="reset-link" id="resetBtn">⟲ Reiniciar premio</a>
-  </div>
-
   <!-- Audio -->
   <audio id="audio" src="assets/sound.mp3" preload="auto" playsinline></audio>
 
-  <!-- Toggle sonido -->
+  <!-- Toggle sonido (por si el navegador bloquea autoplay) -->
   <button id="soundToggle" class="sound-toggle" type="button" aria-label="Activar sonido">
     <svg viewBox="0 0 24 24" fill="none"><path d="M3 10v4h4l5 4V6L7 10H3z" stroke="currentColor" stroke-width="2" stroke-linejoin="round"/></svg>
     Activar sonido
   </button>
-  <div id="soundHint" class="sound-hint" style="display:none;">Necesita un toque para habilitar audio</div>
+  <div id="soundHint" class="sound-hint" style="display:none;">Toque para habilitar audio</div>
 
   <script>
-    const premios=[
-      "🎉 3.000 FICHAS GRATIS",
-      "🔥 BONO DEL 200%",
-      "💥 BONO DEL 150%",
-      "🎁 BONO DEL 100%",
-      "💸 10.000 FICHAS GRATIS"
+    /* =================== CONFIG PREMIOS (ponderados) =================== */
+    // weight = probabilidad relativa (suma 100)
+    const PREMIOS = [
+      { label:"💸 10.000 FICHAS GRATIS", weight:0.5 },
+      { label:"🎉 3.000 FICHAS GRATIS",   weight:2.0 },
+      { label:"🔥 BONO DEL 200%",        weight:12.0 },
+      { label:"💥 BONO DEL 150%",        weight:25.0 },
+      { label:"🎁 BONO DEL 100%",        weight:60.5 },
     ];
+
+    function pickWeighted(items){
+      const total = items.reduce((a,b)=>a+b.weight,0);
+      let r = Math.random()*total;
+      for(const it of items){
+        if((r -= it.weight) <= 0) return it.label;
+      }
+      return items[items.length-1].label;
+    }
+
+    /* =================== ELEMENTOS =================== */
     const giftBox=document.getElementById("giftBox");
     const resultModal=document.getElementById("resultModal");
     const premioText=document.getElementById("premioText");
     const instructionText=document.getElementById("instructionText");
-    const audio=document.getElementById("audio");
     const preloader=document.getElementById("preloader");
     const progressBar=document.getElementById("progressBar");
     const progressText=document.getElementById("progressText");
-    const resetBtn=document.getElementById("resetBtn");
     const confettiLayer=document.getElementById("confetti");
+    const audio=document.getElementById("audio");
     const soundToggle=document.getElementById("soundToggle");
     const soundHint=document.getElementById("soundHint");
 
-    /* ---------- AUDIO: autoplay con fallback ---------- */
-    audio.loop = true; // música ambiente en loop
+    /* =================== AUDIO: autoplay con fallback =================== */
+    audio.loop = true;
 
     async function tryAutoPlay(){
       try{
-        await audio.play();                     // intentar al cargar
-        soundToggle.classList.remove('show');   // sonando
+        await audio.play();
+        soundToggle.classList.remove('show');
         soundHint.style.display='none';
       }catch(err){
-        // Autoplay bloqueado → mostrar botón/ayuda y habilitar con el próximo gesto
         soundToggle.classList.add('show');
         soundHint.style.display='block';
         const unlock = async () => {
@@ -336,41 +333,39 @@
       }
     }
 
-    window.addEventListener('load', () => {
-      // oculto preloader luego de "cargar" visual
+    /* =================== PRELOADER =================== */
+    window.addEventListener('load',function(){
       let p=0; const i=setInterval(()=>{
         p+=Math.random()*15+5;
         if(p>=100){p=100;clearInterval(i);setTimeout(()=>preloader.classList.add('hidden'),300);}
         progressBar.style.width=p+'%';progressText.textContent=Math.floor(p)+'%';
       },100);
-
-      // intento autoplay al cargar
       tryAutoPlay();
     });
 
-    /* ---------- Interacción caja ---------- */
-    giftBox.addEventListener("click",()=>{
-      const g=localStorage.getItem("premioFenix");
-      if(g){
-        mostrarPremio(g);
-        lanzarConfetti();
-        return;
-      }
-      const premio=premios[Math.floor(Math.random()*premios.length)];
-      localStorage.setItem("premioFenix",premio);
-      giftBox.classList.add("opened");
-      instructionText.style.opacity="0";
-      setTimeout(()=>{mostrarPremio(premio);lanzarConfetti();},800);
-    });
-
-    /* ---------- Estado previo ---------- */
+    /* =================== ESTADO PREVIO =================== */
     if(localStorage.getItem("premioFenix")){
       giftBox.classList.add("opened");
       instructionText.textContent="Ya reclamaste tu premio";
       instructionText.style.opacity="0.6";
     }
 
-    /* ---------- Modal ---------- */
+    /* =================== INTERACCIÓN CAJA =================== */
+    giftBox.addEventListener("click",()=>{
+      const previo=localStorage.getItem("premioFenix");
+      if(previo){
+        mostrarPremio(previo);
+        lanzarConfetti();
+        return;
+      }
+      const premio = pickWeighted(PREMIOS);
+      localStorage.setItem("premioFenix",premio);
+      giftBox.classList.add("opened");
+      instructionText.style.opacity="0";
+      setTimeout(()=>{mostrarPremio(premio);lanzarConfetti();},800);
+    });
+
+    /* =================== MODAL =================== */
     function mostrarPremio(p){
       window.scrollTo(0,0);
       const ahora=new Date();
@@ -386,7 +381,7 @@
     }
     resultModal.addEventListener('click',(e)=>{if(e.target===resultModal)cerrarModal();});
 
-    /* ---------- Confeti ---------- */
+    /* =================== CONFETI =================== */
     function lanzarConfetti(){
       confettiLayer.innerHTML='';
       const colors=['#FFD700','#FF8C42','#FFB366','#FFF8F0','#E67A2E'];
@@ -418,17 +413,19 @@
       }
     }
 
-    /* ---------- Reset beneficio ---------- */
+    /* =================== RESET (atajo R) =================== */
     function resetPremio(){
       localStorage.removeItem("premioFenix");
       giftBox.classList.remove("opened");
       instructionText.textContent="Tocá el regalo para descubrir tu premio";
       instructionText.style.opacity="1";
-      giftBox.style.marginLeft='auto'; giftBox.style.marginRight='auto';
       alert("Premio reiniciado. Podés volver a reclamarlo.");
     }
-    resetBtn.addEventListener('click',()=>{ if(confirm("¿Reiniciar el premio?")) resetPremio(); });
-    document.addEventListener('keydown',(e)=>{ if(e.key.toLowerCase()==='r'){ if(confirm("Atajo R: ¿reiniciar premio?")) resetPremio(); }});
+    document.addEventListener('keydown',(e)=>{
+      if(e.key.toLowerCase()==='r'){
+        if(confirm("¿Reiniciar el premio?")) resetPremio();
+      }
+    });
   </script>
 </body>
 </html>
