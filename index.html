@@ -170,7 +170,7 @@
     .modal-button:hover{transform:translateY(-2px);box-shadow:0 14px 38px rgba(255,140,66,.5)}
     .modal-button:active{transform:translateY(0)}
 
-    /* ===== Confetti: contenedor + animaciones en cascada ===== */
+    /* ===== Confetti ===== */
     #confetti{
       position:fixed; inset:0; overflow:hidden; pointer-events:none;
       z-index:2147483647;
@@ -194,6 +194,19 @@
     }
     @keyframes spin { from { transform:rotate(0deg) } to { transform:rotate(720deg) } }
 
+    /* Toggle sonido */
+    .sound-toggle{
+      position:fixed; right:14px; bottom:14px; z-index:2147483647;
+      background:linear-gradient(135deg,var(--primary),var(--primary-dark));
+      color:#fff; border:none; border-radius:999px; padding:10px 14px;
+      font-family:var(--ff-ui); font-weight:700; letter-spacing:.3px;
+      box-shadow:0 8px 22px rgba(255,140,66,.45); cursor:pointer; display:none;
+    }
+    .sound-toggle.show{display:inline-flex; align-items:center; gap:8px}
+    .sound-toggle:active{transform:translateY(1px)}
+    .sound-toggle svg{width:18px;height:18px}
+    .sound-hint{position:fixed; bottom:58px; right:14px; font-size:.8rem; color:var(--secondary); opacity:.9}
+    
     .footer{
       position:fixed;bottom:0;left:0;right:0;padding:16px;text-align:center;
       font-size:.85rem;color:var(--secondary);opacity:.85;z-index:1;
@@ -203,9 +216,7 @@
     .reset-link:hover{text-decoration:underline}
 
     @media (prefers-reduced-motion:reduce){
-      #logo,.header-section,.gift-box,.gift-icon,.modal-content{
-        animation: none !important; transition:none !important;
-      }
+      #logo,.header-section,.gift-box,.gift-icon,.modal-content{animation:none !important; transition:none !important;}
       .confetti-piece{
         animation:
           fall var(--t,3s) linear var(--delay,0s) forwards,
@@ -270,6 +281,13 @@
   <!-- Audio -->
   <audio id="audio" src="assets/sound.mp3" preload="auto" playsinline></audio>
 
+  <!-- Toggle sonido -->
+  <button id="soundToggle" class="sound-toggle" type="button" aria-label="Activar sonido">
+    <svg viewBox="0 0 24 24" fill="none"><path d="M3 10v4h4l5 4V6L7 10H3z" stroke="currentColor" stroke-width="2" stroke-linejoin="round"/></svg>
+    Activar sonido
+  </button>
+  <div id="soundHint" class="sound-hint" style="display:none;">Necesita un toque para habilitar audio</div>
+
   <script>
     const premios=[
       "🎉 3.000 FICHAS GRATIS",
@@ -288,55 +306,51 @@
     const progressText=document.getElementById("progressText");
     const resetBtn=document.getElementById("resetBtn");
     const confettiLayer=document.getElementById("confetti");
+    const soundToggle=document.getElementById("soundToggle");
+    const soundHint=document.getElementById("soundHint");
 
-    // --- Audio robusto ---
-    function playSFX(){
-      if(!audio) return;
+    /* ---------- AUDIO: autoplay con fallback ---------- */
+    audio.loop = true; // música ambiente en loop
+
+    async function tryAutoPlay(){
       try{
-        audio.volume = 1;
-        audio.currentTime = 0;
-        const p = audio.play();
-        if(p && typeof p.then === 'function'){
-          p.catch(()=>{
-            // desbloqueo en el próximo toque/click
-            const unlock = () => {
-              audio.play().catch(()=>{});
-              document.removeEventListener('pointerdown', unlock);
-              document.removeEventListener('touchend', unlock);
-            };
-            document.addEventListener('pointerdown', unlock, { once:true });
-            document.addEventListener('touchend', unlock, { once:true });
-          });
-        }
-      }catch(e){}
-    }
-    // opcional: primer toque en la página desbloquea audio
-    document.addEventListener('touchend', function unlockOnce(){
-      playSFX();
-      audio.pause(); audio.currentTime = 0;
-      document.removeEventListener('touchend', unlockOnce);
-    }, { once:true });
-
-    // Estado previo
-    if(localStorage.getItem("premioFenix")){
-      giftBox.classList.add("opened");
-      instructionText.textContent="Ya reclamaste tu premio";
-      instructionText.style.opacity="0.6";
+        await audio.play();                     // intentar al cargar
+        soundToggle.classList.remove('show');   // sonando
+        soundHint.style.display='none';
+      }catch(err){
+        // Autoplay bloqueado → mostrar botón/ayuda y habilitar con el próximo gesto
+        soundToggle.classList.add('show');
+        soundHint.style.display='block';
+        const unlock = async () => {
+          try{
+            await audio.play();
+            soundToggle.classList.remove('show');
+            soundHint.style.display='none';
+            window.removeEventListener('pointerdown', unlock);
+            window.removeEventListener('keydown', unlock);
+          }catch(e){}
+        };
+        soundToggle.addEventListener('click', unlock, { once:true });
+        window.addEventListener('pointerdown', unlock, { once:true });
+        window.addEventListener('keydown', unlock, { once:true });
+      }
     }
 
-    // Preloader con barra
-    window.addEventListener('load',function(){
+    window.addEventListener('load', () => {
+      // oculto preloader luego de "cargar" visual
       let p=0; const i=setInterval(()=>{
         p+=Math.random()*15+5;
         if(p>=100){p=100;clearInterval(i);setTimeout(()=>preloader.classList.add('hidden'),300);}
         progressBar.style.width=p+'%';progressText.textContent=Math.floor(p)+'%';
       },100);
+
+      // intento autoplay al cargar
+      tryAutoPlay();
     });
 
-    // Interacción caja (el sonido se dispara dentro del GESTO)
+    /* ---------- Interacción caja ---------- */
     giftBox.addEventListener("click",()=>{
       const g=localStorage.getItem("premioFenix");
-      playSFX(); // ← aquí, dentro del gesto del usuario
       if(g){
         mostrarPremio(g);
         lanzarConfetti();
@@ -349,6 +363,14 @@
       setTimeout(()=>{mostrarPremio(premio);lanzarConfetti();},800);
     });
 
+    /* ---------- Estado previo ---------- */
+    if(localStorage.getItem("premioFenix")){
+      giftBox.classList.add("opened");
+      instructionText.textContent="Ya reclamaste tu premio";
+      instructionText.style.opacity="0.6";
+    }
+
+    /* ---------- Modal ---------- */
     function mostrarPremio(p){
       window.scrollTo(0,0);
       const ahora=new Date();
@@ -362,8 +384,9 @@
       instructionText.textContent="Ya reclamaste tu premio";
       instructionText.style.opacity="0.6";
     }
+    resultModal.addEventListener('click',(e)=>{if(e.target===resultModal)cerrarModal();});
 
-    // Confeti en cascada
+    /* ---------- Confeti ---------- */
     function lanzarConfetti(){
       confettiLayer.innerHTML='';
       const colors=['#FFD700','#FF8C42','#FFB366','#FFF8F0','#E67A2E'];
@@ -394,9 +417,8 @@
         setTimeout(()=>c.remove(), 6000);
       }
     }
-    resultModal.addEventListener('click',(e)=>{if(e.target===resultModal)cerrarModal();});
 
-    // Reset beneficio (botón + atajo R)
+    /* ---------- Reset beneficio ---------- */
     function resetPremio(){
       localStorage.removeItem("premioFenix");
       giftBox.classList.remove("opened");
